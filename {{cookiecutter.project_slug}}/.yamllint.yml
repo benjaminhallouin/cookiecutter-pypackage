@@ -1,0 +1,25 @@
+---
+extends: default
+
+rules:
+  line-length:
+    max: 100
+    level: warning
+  indentation:
+    spaces: 2
+  truthy:
+    allowed-values: ['true', 'false', 'on', 'off']
+  comments:
+    min-spaces-from-content: 1
+  comments-indentation: {}
+  document-start: disable
+  empty-lines:
+    max: 2
+  trailing-spaces: {}
+  new-line-at-end-of-file: {}
+
+ignore: |
+  .venv/
+  venv/
+  node_modules/
+  .github/workflows/

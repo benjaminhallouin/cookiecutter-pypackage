@@ -1,0 +1,39 @@
+{% if cookiecutter.use_renovate == "yes" -%}
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":enablePreCommit",
+    "group:allNonMajor"
+  ],
+  "labels": ["dependencies"],
+  "schedule": ["before 3am on Monday"],
+  "timezone": "UTC",
+  "packageRules": [
+    {
+      "matchManagers": ["pip_requirements"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "Python dependencies (non-major)"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "automerge": true,
+      "automergeType": "pr",
+      "ignoreTests": false
+    },
+    {
+      "matchManagers": ["pre-commit"],
+      "automerge": true,
+      "automergeType": "pr"
+    }
+  ],
+  "python": {
+    "enabled": true
+  },
+  "pip_requirements": {
+    "fileMatch": ["(^|/)([\\w-]*)requirements\\.txt$", "(^|/)pyproject\\.toml$"]
+  }
+}
+{% endif -%}

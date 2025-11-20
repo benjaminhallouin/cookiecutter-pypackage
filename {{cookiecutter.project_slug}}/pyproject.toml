@@ -1,0 +1,284 @@
+[build-system]
+requires = ["hatchling>=1.21.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "{{ cookiecutter.project_slug }}"
+version = "{{ cookiecutter.version }}"
+description = "{{ cookiecutter.project_short_description }}"
+readme = "README.md"
+requires-python = ">={{ cookiecutter.min_python_version }}"
+license = {text = "{{ cookiecutter.license }}"}
+authors = [
+    {name = "{{ cookiecutter.author_name }}", email = "{{ cookiecutter.author_email }}"},
+]
+maintainers = [
+    {name = "{{ cookiecutter.author_name }}", email = "{{ cookiecutter.author_email }}"},
+]
+keywords = ["python", "package"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: {{ cookiecutter.license }} License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.8.0",
+    "mypy>=1.13.0",
+    "pytest>=8.3.0",
+    "pytest-cov>=6.0.0",
+    "pytest-xdist>=3.6.0",
+    "pytest-mock>=3.14.0",
+    "pytest-asyncio>=0.24.0",
+    "pre-commit>=4.0.0",
+    "commitizen>=3.30.0",
+    "ipython>=8.30.0",
+    "ipdb>=0.13.13",
+]
+docs = [
+    "mkdocs>=1.6.0",
+    "mkdocs-material>=9.5.0",
+    "mkdocstrings[python]>=0.26.0",
+    "mkdocs-gen-files>=0.5.0",
+    "mkdocs-literate-nav>=0.6.1",
+    "mkdocs-section-index>=0.3.9",
+]
+test = [
+    "pytest>=8.3.0",
+    "pytest-cov>=6.0.0",
+    "pytest-xdist>=3.6.0",
+    "pytest-mock>=3.14.0",
+    "pytest-asyncio>=0.24.0",
+    "hypothesis>=6.122.0",
+    "faker>=33.0.0",
+]
+security = [
+    "bandit[toml]>=1.8.0",
+    "safety>=3.2.0",
+]
+{% if cookiecutter.include_cli == "yes" -%}
+{% if cookiecutter.command_line_interface == "Click" -%}
+cli = [
+    "click>=8.1.7",
+    "rich>=13.9.0",
+]
+{% elif cookiecutter.command_line_interface == "Typer" -%}
+cli = [
+    "typer[all]>=0.15.0",
+    "rich>=13.9.0",
+]
+{% endif -%}
+{% endif -%}
+
+[project.urls]
+Homepage = "https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}"
+Documentation = "https://{{ cookiecutter.github_username }}.github.io/{{ cookiecutter.project_slug }}"
+Repository = "https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}"
+Issues = "https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}/issues"
+Changelog = "https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}/releases"
+
+{% if cookiecutter.include_cli == "yes" -%}
+[project.scripts]
+{{ cookiecutter.project_slug }} = "{{ cookiecutter.project_slug }}.cli:main"
+{% endif -%}
+
+# Hatch configuration
+[tool.hatch.build.targets.wheel]
+packages = ["src/{{ cookiecutter.project_slug }}"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/tests",
+    "/README.md",
+    "/LICENSE",
+    "/pyproject.toml",
+]
+
+[tool.hatch.version]
+path = "src/{{ cookiecutter.project_slug }}/__init__.py"
+
+# Ruff configuration - Ultra strict
+[tool.ruff]
+target-version = "py{{ cookiecutter.min_python_version.replace('.', '') }}"
+line-length = 100
+src = ["src", "tests"]
+extend-include = ["*.ipynb"]
+
+[tool.ruff.lint]
+select = [
+    "ALL",  # Enable all rules
+]
+ignore = [
+    "D203",    # one-blank-line-before-class (conflicts with D211)
+    "D213",    # multi-line-summary-second-line (conflicts with D212)
+    "ANN101",  # missing-type-self
+    "ANN102",  # missing-type-cls
+    "COM812",  # missing-trailing-comma (conflicts with formatter)
+    "ISC001",  # single-line-implicit-string-concatenation (conflicts with formatter)
+    "FIX002",  # line-contains-todo
+    "TD002",   # missing-todo-author
+    "TD003",   # missing-todo-link
+]
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*" = [
+    "S101",    # use of assert
+    "PLR2004", # magic value comparison
+    "ANN201",  # missing return type
+    "D100",    # missing docstring in public module
+    "D103",    # missing docstring in public function
+    "SLF001",  # private member access
+]
+"__init__.py" = [
+    "D104",    # missing docstring in public package
+    "F401",    # imported but unused
+]
+"*.ipynb" = [
+    "T201",    # print found
+    "D100",    # missing module docstring
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.isort]
+known-first-party = ["{{ cookiecutter.project_slug }}"]
+required-imports = ["from __future__ import annotations"]
+
+[tool.ruff.lint.flake8-type-checking]
+strict = true
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = true
+docstring-code-line-length = 88
+
+# MyPy configuration - Ultra strict
+[tool.mypy]
+python_version = "{{ cookiecutter.min_python_version }}"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+strict_concatenate = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+disallow_any_generics = true
+disallow_any_unimported = false
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+no_implicit_optional = true
+no_implicit_reexport = true
+local_partial_types = true
+enable_error_code = [
+    "ignore-without-code",
+    "redundant-expr",
+    "truthy-bool",
+]
+plugins = []
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+disallow_untyped_calls = false
+
+# Pytest configuration
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--cov={{ cookiecutter.project_slug }}",
+    "--cov-report=term-missing:skip-covered",
+    "--cov-report=html",
+    "--cov-report=xml",
+    "--cov-branch",
+    "--cov-fail-under=90",
+    "-ra",
+    "--tb=short",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+]
+filterwarnings = [
+    "error",
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+]
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+parallel = true
+omit = [
+    "*/tests/*",
+    "*/__pycache__/*",
+    "*/.venv/*",
+]
+
+[tool.coverage.report]
+precision = 2
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+[tool.coverage.html]
+directory = "htmlcov"
+
+# Commitizen configuration
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "{{ cookiecutter.version }}"
+version_files = [
+    "src/{{ cookiecutter.project_slug }}/__init__.py:__version__",
+    "pyproject.toml:version"
+]
+tag_format = "v$version"
+update_changelog_on_bump = true
+major_version_zero = true
+
+# Bandit configuration
+[tool.bandit]
+skips = ["B101"]
+exclude_dirs = ["tests", ".venv"]
+
+# Black compatibility (if needed)
+[tool.black]
+line-length = 100
+target-version = ["py{{ cookiecutter.min_python_version.replace('.', '') }}"]
+include = '\.pyi?$'

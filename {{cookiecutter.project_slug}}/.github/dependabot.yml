@@ -1,0 +1,51 @@
+{% if cookiecutter.use_dependabot == "yes" -%}
+version: 2
+updates:
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "{{ cookiecutter.github_username }}"
+    assignees:
+      - "{{ cookiecutter.github_username }}"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+
+  # Python dependencies
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "{{ cookiecutter.github_username }}"
+    assignees:
+      - "{{ cookiecutter.github_username }}"
+    labels:
+      - "dependencies"
+      - "python"
+    commit-message:
+      prefix: "build"
+      include: "scope"
+    versioning-strategy: increase
+    groups:
+      dev-dependencies:
+        dependency-type: "development"
+        patterns:
+          - "*"
+      production-dependencies:
+        dependency-type: "production"
+        patterns:
+          - "*"
+{% endif -%}

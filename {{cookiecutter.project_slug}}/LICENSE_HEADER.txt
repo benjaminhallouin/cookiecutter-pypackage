@@ -1,0 +1,2 @@
+# SPDX-License-Identifier: {{ cookiecutter.license }}
+# Copyright (c) {% now 'local', '%Y' %} {{ cookiecutter.author_name }}

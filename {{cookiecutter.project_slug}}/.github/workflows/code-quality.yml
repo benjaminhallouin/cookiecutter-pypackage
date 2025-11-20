@@ -1,0 +1,27 @@
+# Additional GitHub Actions workflows
+
+## Code Quality Workflow
+{% if cookiecutter.use_github_actions == "yes" -%}
+name: Code Quality
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "{{ cookiecutter.python_version }}"
+      - name: Install dependencies
+        run: |
+          pip install ruff mypy bandit
+      - name: Run quality checks
+        run: |
+          ruff check .
+          mypy src/
+          bandit -r src/
+{% endif -%}
